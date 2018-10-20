@@ -1,16 +1,23 @@
+$(document).ready(setup);
+
+function setup(){
+    parseWord();
+}
 var classCode = "";
 var jsonFile = "HERE";
 //Parse class code input
 
+function parseWord(){
     $("#searchButton").click(function(){
         classCode = document.getElementById("classCode").value.toUpperCase();
-        console.log(classCode);
+        getPyData(classCode);
     });
+}
 
 
 function getPyData(classCode) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "../PMPLookup.py", true);
+    xhttp.open("GET", "../PMPLookup.py", true);
     xhttp.send();
     console.log("here");
 }
