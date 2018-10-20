@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--<link rel="stylesheet" href="index.css">-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../static/index.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form>
+        Class Code:<input type="text" id="classCode"><br>
+        <button type="button" id = "searchButton">Search</button>
+    </form>
+
+    <div class="sortButtons">
+        <input type='checkbox' class=sortBox id = "ratingSort" value='show'>Rating
+        <input type='checkbox' class=sortBox id = "difficultySort" value='show'>Difficulty
+    </div>
+
+    <!--<div class = "profTable">
+        {% for i in range(0, 5) %}
+        <div class="flex-container">
+            <div class="name-col">
+                {{ name_items[i] }}
+            </div>
+            <div class="rating-col">
+                {{ rating_items[i] }}
+            </div>
+            <div class="difficulty-col">
+                {{ difficulty_items[i] }}
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>-->
+
+</body>
+</html>
