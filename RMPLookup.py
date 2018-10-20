@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from ProfessorInfo import ProfessorInfo
 import json
 import sys
-
+from flask import Flask
 class RMPLookup:
 
     def look_up_professor(self, classcode, professorlist):
