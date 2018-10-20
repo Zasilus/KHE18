@@ -2,34 +2,39 @@
 # Professors as well as their Department"
 import requests
 from bs4 import BeautifulSoup
+from ProfessorInfo import ProfessorInfo
+
 
 class RMPLookup:
 
     def lookupprofessor(self, classcode, professorlist):
-        departmentlist = self.getdepartmentlist(classcode,professorlist)
+        departmentlist = self.getdepartmentlist(classcode, professorlist)
         for professor_name in departmentlist:
             professor_name.replace(" ", "+")
             baseurl = "http://www.ratemyprofessors.com"
-            requestsurl ="http://www.ratemyprofessors.com/search.jsp?query=Case+Western+"+professor_name
+            requestsurl = "http://www.ratemyprofessors.com/search.jsp?query=Case+Western+" + professor_name
             page = requests.get(requestsurl)
             soup = BeautifulSoup(page.content, 'html.parser')
-            #soup = soup.encode("utf-8")
-            new_soup = soup.find("li",{"class": "listing PROFESSOR"})
-            a_ref = new_soup.find("a")
-            print(professor_name)
-            for char in a_ref['href']:
-                baseurl+=str(char)
-            print(baseurl)
+            # soup = soup.encode("utf-8")
+            new_soup = soup.find("li", {"class": "listing PROFESSOR"})
+            if (new_soup == None):
+                continue
+            else:
+                a_ref = new_soup.find("a")
+                print(professor_name)
+                for char in a_ref['href']:
+                    baseurl += str(char)
+                print(baseurl)
 
-    def getdepartmentlist(self,classcode, professorlist):
+    def getdepartmentlist(self, classcode, professorlist):
         departmentname = self.classcodetodepartment(classcode)
         departmentlist = filter(lambda department: department['Department'] == departmentname, professorlist)
-        returnlist =[]
+        returnlist = []
         for x in departmentlist:
             returnlist.append(x['Name'])
         return returnlist
 
-    def classcodetodepartment(self,classCode):
+    def classcodetodepartment(self, classCode):
         classCode = classCode.lower();
         classdict = {
             "anth": "Anthropology",
@@ -56,18 +61,18 @@ class RMPLookup:
         }
         return classdict.get(classCode)
 
+
 def main():
     lookup = RMPLookup()
-    genericlist = [{"Department": "Mathematics, Applied Mathematics and Statistics", "Name": "Christopher Butler"},
-                   {"Department": "Chemistry", "Name": "Drew Myers"},
-                   {"Department": "Mathematics, Applied Mathematics and Statistics", "Name": "Steven Izen"},
-                   {"Department": "Physics", "Name": "Harsh Mathur"},
-                   {"Department": "Dance", "Name": "Random Dude"},
-                   {"Department": "Physics", "Name": "Some Covault dude"}
-                   ]
+    # Generates list of professors and their department
+    prompt = ProfessorInfo()
+    genericlist = prompt.make_prof_dept_list()
 
-    lookup.lookupprofessor("MATH", genericlist)
+    print(lookup.getdepartmentlist("CHEM", genericlist));
+    print(lookup.lookupprofessor("CHEM", genericlist));
     #print(lookup.getdepartmentlist("CHEM", genericlist));
     #print(lookup.getdepartmentlist("DANC", genericlist));
+
+
 if __name__ == '__main__':
     main()

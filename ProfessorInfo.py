@@ -28,9 +28,3 @@ class ProfessorInfo:
             j += 1
         return faculty_info
 
-def main():
-    prompt = ProfessorInfo()
-    prompt.make_prof_dept_list()
-
-if __name__ == '__main__':
-    main()
