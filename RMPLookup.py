@@ -9,7 +9,13 @@ class RMPLookup:
 
     def lookupprofessor(self, classcode, professorlist):
         departmentlist = self.getdepartmentlist(classcode, professorlist)
+        url_list = []
         for professor_name in departmentlist:
+            split_name = professor_name.split(" ")
+
+            while(len(split_name) > 2):
+                del split_name[1]
+            professor_name = " ".join(split_name)
             professor_name.replace(" ", "+")
             baseurl = "http://www.ratemyprofessors.com"
             requestsurl = "http://www.ratemyprofessors.com/search.jsp?query=Case+Western+" + professor_name
@@ -25,6 +31,8 @@ class RMPLookup:
                 for char in a_ref['href']:
                     baseurl += str(char)
                 print(baseurl)
+                url_list.append(baseurl)
+        return url_list
 
     def getdepartmentlist(self, classcode, professorlist):
         departmentname = self.classcodetodepartment(classcode)
