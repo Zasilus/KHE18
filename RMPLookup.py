@@ -4,10 +4,11 @@ import requests
 from bs4 import BeautifulSoup
 from ProfessorInfo import ProfessorInfo
 import json
+import sys
 
 class RMPLookup:
 
-    def lookupprofessor(self, classcode, professorlist):
+    def look_up_professor(self, classcode, professorlist):
         departmentlist = self.getdepartmentlist(classcode, professorlist)
         url_list = []
         for professor_name in departmentlist:
@@ -63,9 +64,9 @@ class RMPLookup:
         prof_dict = { "name": prof_name, "rating": prof_rating, "difficulty": prof_difficulty}
         return prof_dict
 
-
-
     def getdepartmentlist(self, classcode, professorlist):
+        if "EECS" in classcode:
+            return professorlist
         departmentname = self.classcodetodepartment(classcode)
         departmentlist = filter(lambda department: department['Department'] == departmentname, professorlist)
         returnlist = []
@@ -100,18 +101,24 @@ class RMPLookup:
         }
         return classdict.get(classCode)
 
+    def build_function(self, class_code):
+        class_department = class_code[:4]
+        prompt = ProfessorInfo()
+        if class_department == "EECS":
+            professor_list = prompt.make_cs_prof_list()
+        else:
+            professor_list = prompt.make_artsci_prof_dept_list()
+        url_list = self.look_up_professor(class_department, professor_list)
+        json_look_up = self.class_teaching_professor_list(class_code, url_list)
+        return json_look_up
+
 
 def main():
+    class_code = sys.argv[1]
     lookup = RMPLookup()
-    # Generates list of professors and their department
-    prompt = ProfessorInfo()
-    genericlist = prompt.make_prof_dept_list()
+    json = lookup.build_function(class_code)
+    print(json)
 
-    lookup.getdepartmentlist("CHEM", genericlist);
-    url_list = lookup.lookupprofessor("CHEM", genericlist);
-    lookup.class_teaching_professor_list("CHEM223", url_list);
-    #print(lookup.getdepartmentlist("CHEM", genericlist));
-    #print(lookup.getdepartmentlist("DANC", genericlist));
 
 
 if __name__ == '__main__':
