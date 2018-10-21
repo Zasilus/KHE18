@@ -7,6 +7,7 @@ import json
 from multiprocessing import Pool
 from functools import partial
 import sys
+from operator import itemgetter
 
 class RMPLookup:
 
@@ -66,6 +67,7 @@ class RMPLookup:
 
         list_of_dict = list(p.map(func, url_list))
         list_of_dict = list(filter(None,list_of_dict))
+        list_of_dict.sort(key=itemgetter('rating'))
         json_output = json.dumps(list_of_dict)
         return json_output
 
@@ -146,9 +148,9 @@ class RMPLookup:
 
 
 def main():
-    class_code = sys.argv[1]
+   # class_code = sys.argv[1]
     lookup = RMPLookup()
-    json = lookup.build_function(class_code)
+    json = lookup.build_function("EECS233")
     print(json)
 
 
