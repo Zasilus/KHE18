@@ -61,12 +61,11 @@ class RMPLookup:
 
 
     def class_teaching_professor_list(self, class_code, url_list):
-        new_class_code = class_code
-        list_of_dict = []
         p = Pool(4)
         func = partial(self.url_to_prof_info, class_code)
 
         list_of_dict = list(p.map(func, url_list))
+        list_of_dict = list(filter(None,list_of_dict))
         json_output = json.dumps(list_of_dict)
         return json_output
 
