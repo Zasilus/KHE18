@@ -5,15 +5,16 @@ function setup(){
 }
 var classCode = "";
 var jsonFile;
-var nameItems;
-var ratingItems;
-var difficultyItems;
+var length;
+var nameItems = [];
+var ratingItems = [];
+var difficultyItems = [];
 
 //Parse class code input
 function parseWord(){
     $("#searchButton").click(function(){
         classCode = document.getElementById("classCode").value.toUpperCase();
-        gotoEndpt(classCode, printList);
+        gotoEndpt(classCode, getList);
     });
 }
 
@@ -38,7 +39,27 @@ function callRMPLookup(url, callback){
     xmlhttp.send(classCode);
 }
 
-// Prints out the list of professors related to the class code
-function printList(profList){
-    console.log(jQuery.parseJSON(profList));
+// Gets the list of professors related to the class code
+function getList(profList){
+    console.log(profList);
+    jsonFile = jQuery.parseJSON(profList);
+    length = Object.keys(jsonFile).length;
+        for (i = 0; i < length; i++){
+           nameItems[i] = jsonFile[i].name;
+           ratingItems[i] = jsonFile[i].rating;
+           difficultyItems[i] = jsonFile[i].difficulty;
+        }
+    createTable();
 }
+
+function createTable(){
+    document.write("<table border='1' width='200'>")
+    document.write("<tr><th>Professor</th><th>Rating</th><th>Difficulty</th></tr>");
+    for(var i=0; i<length;i++) {
+	    document.write("<tr><td>" + nameItems[i] + "</td><td>" + ratingItems[i] + "</td><td>" + difficultyItems[i] +"</td></tr>");
+    }
+    document.write("</table>")
+}
+
+
+

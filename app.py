@@ -12,7 +12,9 @@ def home():
 @app.route("/RMPLookup.py<id>")
 def displayresults(id):
     lookup = RMPLookup()
+    #profArray = []
     return lookup.build_function(id)
 
+    
 if __name__ == "__main__":
     app.run(debug=True)
