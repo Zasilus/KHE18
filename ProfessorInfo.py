@@ -40,9 +40,6 @@ class ProfessorInfo:
             for a_tags in a_ref:
                 professor = a_tags.text
                 professor = professor.replace("\xa0", " ")
-                #professor = professor.split("\xa0-\xa0")[0]
-                #professor = professor.split("-\xa0")[0]
-                #professor = professor.split("\xa0-")[0]
                 professor = professor.split(", ")[0]
                 professor = professor.split(" - ")[0]
 
@@ -56,9 +53,26 @@ class ProfessorInfo:
         #print(full_cs_data)
         return list_of_professors
 
+    def make_eciv_prof_list(self):
+        list_of_professors = []
+        core_faculty = requests.get("http://engineering.case.edu/eciv/faculty")
+        soup = BeautifulSoup(core_faculty.content, 'html.parser')
+        core_faculty_data = soup.findAll('div', {'class':"content clear-block"})
+        core_faculty_data = soup.findAll('p')
+        trimmed_faculty_data = []
+        #split_core_faculty_data = "".join(core_faculty_data)
+        #split_core_faculty_data = split_core_faculty_data.split("<hr>")
+        for para in core_faculty_data:
+
+            if len(para.findAll('strong')) != 0:
+                trimmed_faculty_data.append(para.findAll('strong'))
+        print(core_faculty_data)
+
 def main():
     professor_info = ProfessorInfo()
-    professor_info.make_cs_prof_list()
+    professor_info.make_emae_prof_list()
+
+
 
 if __name__ == '__main__':
     main()
