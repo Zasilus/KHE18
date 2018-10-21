@@ -5,35 +5,37 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="../static/index.js"></script>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Class CWRUsing</title>
 </head>
 <body>
-    <form action="../test.py" method = "post">
+    <form action="../RMPLookup.py" method="post">
         Class Code:<input type="text" name = "searchbox" id="classCode"><br>
         <button type="button" id = "searchButton">Search</button>
     </form>
 
-    <div class="sortButtons">
+    <div class = "sortButtons">
         <input type='checkbox' class=sortBox id = "ratingSort" value='show'>Rating
         <input type='checkbox' class=sortBox id = "difficultySort" value='show'>Difficulty
     </div>
 
-    <!--<div class = "profTable">
-        {% for i in range(0, 5) %}
-        <div class="flex-container">
-            <div class="name-col">
-                {{ name_items[i] }}
-            </div>
-            <div class="rating-col">
-                {{ rating_items[i] }}
-            </div>
-            <div class="difficulty-col">
-                {{ difficulty_items[i] }}
-            </div>
+    <div class = "flex-container-title">
+        <div class="name-col" style='text-align:center'>Professor</div>
+        <div class="rating-col" style='text-align:center'>Rating</div>
+        <div class="difficulty-col" style='text-align:center'>Difficulty</div>
+    </div>
+
+    <!--{% for i in jsonFile %}
+    <div class = "flex-container">
+        <div class = "name-data">
+            {{nameItems[i]}}
         </div>
-        {% endfor %}
-
-    </div>-->
-
+        <div class = "rating-data">
+            {{ratingItems[i]}}
+        </div>
+        <div class = "rating-data">
+            {{difficultyItems[i]}}
+        </div>
+    </div>
+    {% endfor %}-->
 </body>
 </html>

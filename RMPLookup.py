@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from ProfessorInfo import ProfessorInfo
 import json
 import sys
+import cgi
+
 from flask import Flask
 class RMPLookup:
 
@@ -114,12 +116,11 @@ class RMPLookup:
 
 
 def main():
-    class_code = sys.argv[1]
+    form = cgi.FieldStorage()
+    searchterm = form.getvalue("searchbox")
     lookup = RMPLookup()
-    json = lookup.build_function(class_code)
-    print(json)
-
-
+    json = lookup.build_function(searchterm)
+    return json
 
 if __name__ == '__main__':
     main()
