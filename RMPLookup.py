@@ -4,55 +4,85 @@ import requests
 from bs4 import BeautifulSoup
 from ProfessorInfo import ProfessorInfo
 import json
-import sys
-import cgi
+from multiprocessing import Pool
+from functools import partial
 
-from flask import Flask
 class RMPLookup:
 
     def look_up_professor(self, classcode, professorlist):
         departmentlist = self.getdepartmentlist(classcode, professorlist)
         url_list = []
-        for professor_name in departmentlist:
-            split_name = professor_name.split(" ")
-
-            while(len(split_name) > 2):
-                del split_name[1]
-            professor_name = " ".join(split_name)
-            professor_name.replace(" ", "+")
-            baseurl = "http://www.ratemyprofessors.com"
-            requestsurl = "http://www.ratemyprofessors.com/search.jsp?query=Case+Western+" + professor_name
-            page = requests.get(requestsurl)
-            soup = BeautifulSoup(page.content, 'html.parser')
-            # soup = soup.encode("utf-8")
-            find_professor = soup.find("li", {"class": "listing PROFESSOR"})
-            if (find_professor == None):
-                continue
-            else:
-                a_ref = find_professor.find("a")
-                for char in a_ref['href']:
-                    baseurl += str(char)
-                url_list.append(baseurl)
+        p = Pool(4)
+        url_list = list(p.map(self.name_to_url, departmentlist))
+        url_list = list(filter(None, url_list))
+        #for professor_name in departmentlist:
+         #   self.loop_invariant(professor_name,url_list)
         return url_list
 
+    def name_to_url(self, professor_name):
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        split_name = professor_name.split(" ")
+        while (len(split_name) > 2):
+            del split_name[1]
+        professor_name = " ".join(split_name)
+        professor_name.replace(" ", "+")
+        baseurl = "http://www.ratemyprofessors.com"
+        requestsurl = "http://www.ratemyprofessors.com/search.jsp?query=Case+Western+" + professor_name
+        page = requests.get(requestsurl,headers=headers)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        # soup = soup.encode("utf-8")
+        find_professor = soup.find("li", {"class": "listing PROFESSOR"})
+        if (find_professor != None):
+            a_ref = find_professor.find("a")
+            for char in a_ref['href']:
+                baseurl += str(char)
+            return baseurl
+
+
+    def loop_invariant(self, professor_name, url_list):
+        split_name = professor_name.split(" ")
+        while(len(split_name) > 2):
+            del split_name[1]
+        professor_name = " ".join(split_name)
+        professor_name.replace(" ", "+")
+        baseurl = "http://www.ratemyprofessors.com"
+        requestsurl = "http://www.ratemyprofessors.com/search.jsp?query=Case+Western+" + professor_name
+        page = requests.get(requestsurl)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        # soup = soup.encode("utf-8")
+        find_professor = soup.find("li", {"class": "listing PROFESSOR"})
+        if (find_professor != None):
+            a_ref = find_professor.find("a")
+            for char in a_ref['href']:
+                baseurl += str(char)
+            url_list.append(baseurl)
+        return url_list
+
+
     def class_teaching_professor_list(self, class_code, url_list):
+        new_class_code = class_code
         list_of_dict = []
-        for professor_url in url_list:
-            page = requests.get(professor_url)
-            soup = BeautifulSoup(page.content, 'html.parser')
-            find_class = soup.find_all("span", {"class": "name"})
-            is_teaching_class = False
-            for span in find_class:
-                class_name = span.find("span", {"class": "response"}).text
-                if class_name == class_code:
-                    is_teaching_class = True
-                    break
-            if is_teaching_class:
-                prof_dict = self.scrap_difficulty_rating(soup)
-                list_of_dict.append(prof_dict)
+        p = Pool(4)
+        func = partial(self.url_to_prof_info, class_code)
+
+        list_of_dict = list(p.map(func, url_list))
         json_output = json.dumps(list_of_dict)
         return json_output
 
+    def url_to_prof_info(self, class_code, professor_url):
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        page = requests.get(professor_url,headers=headers)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        find_class = soup.find_all("span", {"class": "name"})
+        is_teaching_class = False
+        for span in find_class:
+            class_name = span.find("span", {"class": "response"}).text
+            if class_name == class_code:
+                is_teaching_class = True
+                break
+        if is_teaching_class:
+            prof_dict = self.scrap_difficulty_rating(soup)
+            return prof_dict
 
     def scrap_difficulty_rating(self,soup):
         professor_name_span = soup.find("span", {"class": "pfname"}).text
@@ -116,11 +146,12 @@ class RMPLookup:
 
 
 def main():
-    form = cgi.FieldStorage()
-    searchterm = form.getvalue("searchbox")
+    class_code = sys.argv[1]
     lookup = RMPLookup()
-    json = lookup.build_function(searchterm)
-    return json
+    json = lookup.build_function(class_code)
+    print(json)
+
+
 
 if __name__ == '__main__':
     main()
