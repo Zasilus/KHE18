@@ -6,6 +6,7 @@ from ProfessorInfo import ProfessorInfo
 import json
 from multiprocessing import Pool
 from functools import partial
+import sys
 
 class RMPLookup:
 
