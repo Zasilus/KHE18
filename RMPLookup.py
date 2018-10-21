@@ -67,7 +67,7 @@ class RMPLookup:
 
         list_of_dict = list(p.map(func, url_list))
         list_of_dict = list(filter(None,list_of_dict))
-        list_of_dict.sort(key=itemgetter('rating'))
+        list_of_dict.sort(key=itemgetter('rating'),reverse=True)
         json_output = json.dumps(list_of_dict)
         return json_output
 
